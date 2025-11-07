@@ -1,0 +1,52 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>자산배분 모델 추천</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>자산배분 모델 추천</h1>
+
+    <section class="controls">
+      <label>CSV 업로드 (첫 열=날짜, 나머지 열=자산별 수익률)</label>
+      <input id="file" type="file" accept=".csv" />
+
+      <label>또는 샘플 데이터 사용</label>
+      <button id="use-sample">샘플 데이터 로드</button>
+
+      <div class="row">
+        <label>모델</label>
+        <select id="model">
+          <option value="MVP">MVP (Min Volatility)</option>
+          <option value="MaxSharpe">Max Sharpe</option>
+          <option value="RP">Risk Parity (RP)</option>
+          <option value="MD">Max Diversification (MD)</option>
+          <option value="EW">Equal Weight (EW)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>리밸런스 주기 (pandas freq)</label>
+        <input id="rebal" type="text" value="W-FRI" />
+      </div>
+
+      <div class="row">
+        <label>lookback (일)</label>
+        <input id="lookback" type="number" value="60" min="1" />
+      </div>
+
+      <button id="run">계산 실행</button>
+    </section>
+
+    <section id="result">
+      <h2>결과</h2>
+      <pre id="output">아직 계산 전입니다.</pre>
+    </section>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

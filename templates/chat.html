@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 자산배분 분석 챗봇</title>
+  <style>
+    body {
+      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+      background-color: #f7f9fb;
+      color: #132440;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .chat-section {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .chat-header {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-header::before {
+      content: "💬";
+      font-size: 20px;
+    }
+
+    .chat-subtext {
+      color: #777;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .chat-box {
+      background-color: #f1f4f7;
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      width: fit-content;
+      max-width: 80%;
+    }
+
+    .chat-box.bot {
+      background-color: #e9eff2;
+      align-self: flex-start;
+      border-left: 4px solid #16476A;
+    }
+
+    .chat-box.user {
+      background-color: #BF092F;
+      color: white;
+      align-self: flex-end;
+      border-right: 4px solid #3B9797;
+    }
+
+    .chat-time {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+      margin-left: 8px;
+    }
+
+    .chat-suggestions {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chat-suggestions button {
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      background: #fff;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chat-suggestions button:hover {
+      background: #3B9797;
+      color: white;
+      border-color: #3B9797;
+    }
+
+    .chat-input-area {
+      display: flex;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .chat-input {
+      flex: 1;
+      border: none;
+      padding: 14px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chat-send-btn {
+      background-color: #132440;
+      border: none;
+      color: white;
+      padding: 0 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-send-btn:hover {
+      background-color: #16476A;
+    }
+
+    .chat-send-btn::before {
+      content: "✈️";
+      font-size: 16px;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-section">
+    <div class="chat-header">대화형 분석</div>
+    <div class="chat-subtext">포트폴리오에 대해 궁금한 점을 물어보세요</div>
+
+    <div class="chat-container">
+      <div class="chat-box bot">
+        안녕하세요! 저는 AI 자산배분 분석 도우미입니다.<br>
+        효율적 프론티어 분석 결과를 기반으로 귀하의 투자 목표와 리스크 성향에 맞는
+        최적의 포트폴리오를 추천해드리겠습니다.<br>
+        무엇을 도와드릴까요?
+      </div>
+      <div class="chat-time">오후 12:51</div>
+    </div>
+
+    <div class="chat-suggestions">
+      <button>최대 샤프 포트폴리오에 대해 설명해주세요</button>
+      <button>현재 시장 상황에서 추천하는 전략은?</button>
+      <button>리스크를 줄이려면 어떻게 해야 하나요?</button>
+      <button>분산 투자의 장점은 무엇인가요?</button>
+    </div>
+
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" placeholder="메시지를 입력하세요..." />
+      <button class="chat-send-btn"></button>
+    </div>
+  </div>
+
+</body>
+</html>
