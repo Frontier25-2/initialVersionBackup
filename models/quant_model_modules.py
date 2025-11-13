@@ -26,14 +26,6 @@ def clean_weights_array(arr, cutoff=1e-6, rounding=6):
         a = a / s
     return a
 
-# ---------- Equal Weight ----------
-def EW(returns:pd.DataFrame, rebal_periods:str)->pd.DataFrame:
-    asset_num = len(returns.columns)
-    rebal_indice = pd.date_range(returns.index[0], returns.index[-1], freq=rebal_periods) 
-    rebal_indice = returns.index[returns.index.get_indexer(rebal_indice, method='ffill')]
-    Pw = pd.DataFrame([[1/asset_num]*asset_num for i in range(len(rebal_indice))], index=rebal_indice, columns=returns.columns)
-    return Pw
-
 # ---------- Maximize Diversification (MD) ----------
 def MaximizeDiversification(rebal_periods: str, returns: pd.DataFrame, lookback_periods:int, bnd=None, long_only=True, frequency=252):
     def calc_diversification_ratio(w, V):
@@ -161,43 +153,4 @@ def RP(rebal_periods:str, returns:pd.DataFrame, lookback_periods:int, frequency=
             W = np.repeat(1/len(ext_df.columns), len(ext_df.columns))
         Pw_list.append(W)
     Pw = pd.DataFrame(Pw_list, index=rebal_indice, columns=returns.columns)
-    return Pw
-
-# ---------- Risk Budget (RB) - optional ----------
-def RB(rebal_periods:str, returns:pd.DataFrame, lookback_periods:int, frequency=252, cov_type='simple', rb=None):
-    from pypfopt.risk_models import exp_cov
-    def obj_fun(x, p_cov, rb):
-        return np.sum((x*np.dot(p_cov,x)/np.dot(x.transpose(), np.dot(p_cov, x))-rb)**2)
-
-    def cons_sum_weight(x):
-        return np.sum(x) - 1.0
-
-    def cons_long_only_weight(x):
-        return x
-
-    def get_weights(asset_rets, rb_list, cov_type):
-        num_arp = asset_rets.shape[1]
-        if cov_type == "simple":
-            p_cov = asset_rets.cov().values
-        elif cov_type == "exponential":
-            p_cov = exp_cov(asset_rets, returns_data=True, span=len(asset_rets), frequency=frequency).values
-        w0 = 1.0 * np.ones((num_arp,)) / num_arp
-        cons = ({'type': 'eq', 'fun':cons_sum_weight},
-                {'type': 'ineq', 'fun':cons_long_only_weight})
-        res = minimize(obj_fun, w0, args=(p_cov, rb_list), method='SLSQP', constraints=cons)
-        return res.x
-
-    if rb is None:
-        rb = [1/len(returns.columns)]*len(returns.columns)
-
-    rebal_indice = pd.date_range(returns.index[0+lookback_periods], returns.index[-1], freq=rebal_periods)
-    rebal_indice = returns.index[returns.index.get_indexer(rebal_indice, method='ffill')]
-
-    Pw_list = []
-    for idx in rebal_indice:
-        ext_df = returns.loc[:idx].iloc[-lookback_periods:]
-        W = get_weights(ext_df, rb, cov_type)
-        Pw_list.append(W)
-
-    Pw = pd.DataFrame(Pw_list, rebal_indice, columns=returns.columns)
     return Pw

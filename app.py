@@ -9,8 +9,7 @@ from models.quant_model_modules import (
     MeanVarianceMinVolatility,
     MeanVarianceMaxSharpe,
     RP,
-    MaximizeDiversification,
-    EW
+    MaximizeDiversification
 )
 from utils.portfolio_metrics import calc_portfolio_metrics
 
@@ -20,8 +19,7 @@ MODEL_MAP = {
     "MVP": MeanVarianceMinVolatility,
     "MaxSharpe": MeanVarianceMaxSharpe,
     "RP": RP,
-    "MD": MaximizeDiversification,
-    "EW": EW
+    "MD": MaximizeDiversification
 }
 
 @app.route("/")
@@ -38,7 +36,7 @@ def _parse_csv(file_storage):
 def api_calculate():
     """
     POST JSON:
-    - model: 'MVP'|'MaxSharpe'|'RP'|'MD'|'EW'
+    - model: 'MVP'|'MaxSharpe'|'RP'|'MD'
     - rebal: pandas freq string e.g. 'W-FRI'
     - lookback: int
     - returns: optional (if client sends JSON data instead of file) dict of lists or CSV file via form 'file'
@@ -82,8 +80,6 @@ def api_calculate():
     try:
         if model_name == "MD":
             Pw = model_fn(rebal, returns_df, lookback)
-        elif model_name == "EW":
-            Pw = model_fn(returns_df, rebal)
         else:
             Pw = model_fn(rebal, returns_df, lookback)
     except Exception as e:
