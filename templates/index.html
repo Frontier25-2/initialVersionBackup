@@ -1,51 +1,99 @@
-<!-- templates/index.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <title>자산배분 모델 추천</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <meta charset="UTF-8" />
+  <title>포트폴리오 계산기</title>
+  <script>
+    async function runModel() {
+      const fileInput = document.getElementById("file");
+      const model = document.getElementById("model").value;
+      const rebal = document.getElementById("rebal").value;
+      const lookback = document.getElementById("lookback").value;
+
+      if (!fileInput.files[0]) {
+        alert("CSV 파일을 업로드해주세요!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("model", model);
+      formData.append("rebal", rebal);
+      formData.append("lookback", lookback);
+
+      const resp = await fetch("/api/calculate", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await resp.json();
+
+      // 응답 확인
+      console.log(data);
+
+      // 가중치 표시
+      const weightsDiv = document.getElementById("weights");
+      weightsDiv.textContent = JSON.stringify(data.weights, null, 2);
+
+      // 누적수익률 그래프 표시
+      const plotImg = document.getElementById("plot");
+      if (data.plot) {
+        plotImg.src = "data:image/png;base64," + data.plot;
+        plotImg.style.display = "block";
+      } else {
+        plotImg.style.display = "none";
+      }
+
+      // 메트릭 (누적수익률 마지막 값 등)
+      const cumret = data.cumret;
+      if (cumret) {
+        const lastValue = Object.values(cumret).slice(-1)[0];
+        document.getElementById("metric").textContent =
+          "최종 누적수익률: " + (lastValue * 100).toFixed(2) + "%";
+      } else {
+        document.getElementById("metric").textContent = "메트릭 없음";
+      }
+    }
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>자산배분 모델 추천</h1>
+  <h2>📈 포트폴리오 계산기</h2>
 
-    <section class="controls">
-      <label>CSV 업로드 (첫 열=날짜, 나머지 열=자산별 수익률)</label>
-      <input id="file" type="file" accept=".csv" />
-
-      <label>또는 샘플 데이터 사용</label>
-      <button id="use-sample">샘플 데이터 로드</button>
-
-      <div class="row">
-        <label>모델</label>
-        <select id="model">
-          <option value="MVP">MVP (Min Volatility)</option>
-          <option value="MaxSharpe">Max Sharpe</option>
-          <option value="RP">Risk Parity (RP)</option>
-          <option value="MD">Max Diversification (MD)</option>
-        </select>
-      </div>
-
-      <div class="row">
-        <label>리밸런스 주기 (pandas freq)</label>
-        <input id="rebal" type="text" value="W-FRI" />
-      </div>
-
-      <div class="row">
-        <label>lookback (일)</label>
-        <input id="lookback" type="number" value="60" min="1" />
-      </div>
-
-      <button id="run">계산 실행</button>
-    </section>
-
-    <section id="result">
-      <h2>결과</h2>
-      <pre id="output">아직 계산 전입니다.</pre>
-    </section>
+  <div>
+    <label>CSV 파일:</label>
+    <input type="file" id="file" />
   </div>
 
-  <script src="/static/script.js"></script>
+  <div>
+    <label>모델:</label>
+    <select id="model">
+      <option value="MVP">Minimum Variance Portfolio</option>
+      <option value="MaxSharpe">Mean-Variance (Max Sharpe)</option>
+      <option value="RP">Risk Parity</option>
+      <option value="MD">Maximize Diversification</option>
+    </select>
+  </div>
+
+  <div>
+    <label>리밸런스 주기:</label>
+    <input type="text" id="rebal" value="W-FRI" />
+  </div>
+
+  <div>
+    <label>룩백 기간:</label>
+    <input type="number" id="lookback" value="60" />
+  </div>
+
+  <button onclick="runModel()">계산 실행</button>
+
+  <hr />
+
+  <h3>📊 결과</h3>
+  <div><strong>가중치:</strong></div>
+  <pre id="weights" style="background:#f9f9f9; padding:10px; border-radius:8px;"></pre>
+
+  <div><strong>메트릭:</strong> <span id="metric"></span></div>
+
+  <img id="plot" style="margin-top:20px; display:none; border:1px solid #ccc; border-radius:10px; max-width:700px;" />
 </body>
 </html>
